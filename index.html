@@ -74,8 +74,10 @@
     -webkit-overflow-scrolling:touch;
     padding:8px 22px 12px;
   }
+  .stage-capa{padding-top:15dvh;}
   .screen{display:none;animation:fade .45s ease;}
   .screen.active{display:block;}
+
   @keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
   .eyebrow{font-size:11px;letter-spacing:.22em;font-weight:600;text-transform:uppercase;opacity:.8;margin-bottom:14px;}
   h1{font-weight:700;font-size:30px;line-height:1.08;letter-spacing:-.01em;margin-bottom:14px;}
@@ -148,8 +150,8 @@
   .icon line,.icon path,.icon rect,.icon circle,.icon polygon{stroke:var(--branco);stroke-width:2.2;fill:none;}
   .card.sel .icon line,.card.sel .icon path,.card.sel .icon rect,.card.sel .icon circle,.card.sel .icon polygon{stroke:var(--preto);}
   /* COR */
-  .fam-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;}
-  .fam{flex:0 0 auto;padding:9px 15px;border:1px solid var(--linha);border-radius:30px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;}
+  .fam-row{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+  .fam{padding:12px 16px;border:1px solid var(--linha);border-radius:14px;font-size:14px;font-weight:500;cursor:pointer;text-align:left;}
   .fam.sel{background:var(--branco);color:var(--preto);border-color:var(--branco);}
   .fam-desc{font-size:13px;font-weight:300;line-height:1.4;opacity:.9;margin-bottom:16px;min-height:36px;}
   .swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:22px;}
@@ -188,6 +190,7 @@
   .logo{height:26px;display:block;margin:0 auto 30px;}
   /* MARCA REAL BADOC */
   .brand{display:flex;flex-direction:column;align-items:flex-start;margin-bottom:30px;}
+  section.screen.active[data-nav="false"]{justify-content:center;}
   .brand-logo{width:150px;height:auto;}
   .brand-logo path{fill:#fff;}
   .chevron-bar{
@@ -210,6 +213,11 @@
   .mode-card:active{transform:scale(.99);}
   .mode-t{font-size:17px;font-weight:600;}
   .mode-d{font-size:13px;font-weight:300;opacity:.85;}
+  .whats-note{background:#25D366;border-radius:16px;padding:20px 20px 18px;margin-top:36px;}
+  .whats-label{font-size:18px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:10px;}
+  .whats-note p{font-size:14.5px;font-weight:400;color:#fff;margin-bottom:16px;line-height:1.55;}
+  .whats-note p strong{font-weight:700;}
+  .whats-btn{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#25D366;background:#fff;border-radius:30px;padding:11px 20px;text-decoration:none;width:fit-content;}
 </style>
 </head>
 <body>
@@ -223,7 +231,7 @@
   <div class="stage" id="stage">
 
     <!-- 0 CAPA -->
-    <section class="screen active" data-nav="false">
+    <section class="screen screen-capa active" data-nav="false">
       <div class="brand">
         <svg class="brand-logo" viewBox="0 0 526.9 135.91" role="img" aria-label="Badoc">
           <path d="M362.84,135.63c-27.7-.18-50.09-22.88-49.89-50.58.19-27.71,22.89-50.09,50.58-49.9,27.7.19,50.09,22.87,49.9,50.58-.2,27.7-22.89,50.09-50.59,49.9ZM363.33,64.78c-11.36-.08-20.67,9.1-20.76,20.47-.07,11.37,9.11,20.67,20.48,20.75,11.36.08,20.67-9.11,20.75-20.47.08-11.37-9.11-20.68-20.47-20.75Z"/>
@@ -452,10 +460,15 @@
 
     <!-- 19 DIAGNOSTICO -->
     <section class="screen" data-nav="false" data-block="Síntese">
-      <div class="eyebrow">Seu Diagnóstico</div>
-      <h1 id="diagHead">A marca que apareceu aqui.</h1>
-      <p class="sub">Essa é a leitura visual que extraímos das suas escolhas. É daqui que a Badoc&#174; parte para criar.</p>
-      <div id="diagBody"></div>
+      <div class="eyebrow">Quase lá</div>
+      <h1>Seu diagnóstico está pronto.</h1>
+      <p class="sub">A Badoc&#174; já tem tudo o que precisa para começar. Clique em enviar e entraremos em contato em breve.</p>
+      <div id="diagBody" style="display:none"></div>
+      <div class="whats-note">
+        <div class="whats-label">Importante</div>
+        <p>Se você tiver referências visuais, logos de marcas que admira, moodboard ou qualquer imagem que inspire a sua marca, envie pelo WhatsApp logo após o envio. Isso enriquece muito o diagnóstico.</p>
+        <a href="https://wa.me/5582988293228" target="_blank" class="whats-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Enviar referências pelo WhatsApp</a>
+      </div>
     </section>
 
   </div>
@@ -669,6 +682,7 @@ function show(n){
   i=n;
   screens[i].classList.add('active');
   stage.scrollTop=0;
+  stage.classList.toggle('stage-capa',n===0);
   const total=screens.length-1;
   prog.style.width=(i/total*100)+'%';
   count.textContent=(i===0||i===total)?'':i+' / '+(total-1);
@@ -713,7 +727,7 @@ function render(){}
 /* ---------- DIAGNOSTICO ---------- */
 function buildDiag(){
   const nome=document.getElementById('q_nome').value||'Sua marca';
-  document.getElementById('diagHead').textContent=nome+', em poucas escolhas.';
+  // titulo fixo na tela final
   const ax1=+document.getElementById('ax1').value;
   const ax2=+document.getElementById('ax2').value;
   const ax3=+document.getElementById('ax3').value;
