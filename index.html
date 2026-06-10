@@ -19,14 +19,18 @@
     --linha-forte:#001a0d;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{height:100%;background:#00a651;}
+  html,body{height:100%;background:#004d24;}
   body{
     font-family:'Futura','Jost',sans-serif;
-    background:var(--verde-fundo);
+    background:#004d24;
     color:var(--branco);
     font-weight:400;
     -webkit-font-smoothing:antialiased;
     overflow:hidden;
+  }
+  @media(min-width:600px){
+    html,body{overflow:auto;}
+    body{display:flex;align-items:flex-start;justify-content:center;padding:48px 20px 72px;}
   }
   .app{
     height:100dvh;
@@ -37,6 +41,10 @@
     display:flex;
     flex-direction:column;
     position:relative;
+  }
+  @media(min-width:600px){
+    .app{height:auto;min-height:600px;border-radius:28px;box-shadow:0 32px 80px rgba(0,0,0,.45);overflow:hidden;width:440px;}
+    .screen{min-height:560px;}
   }
   /* PROGRESSO */
   .topbar{
@@ -237,7 +245,7 @@
       <div class="eyebrow">A Essência</div>
       <h2>Qual é o nome da marca?</h2>
       <p class="sub">É por ele que tudo começa.</p>
-      <input type="text" id="q_nome" placeholder="Ex: Estoril Studios">
+      <input type="text" id="q_nome" placeholder="Ex: Sua Marca">
     </section>
 
     <!-- 2 FASE -->
@@ -671,34 +679,11 @@ function show(n){
   else next.textContent='Continuar';
   if(screens[i].dataset.init==='cor'&&!document.querySelector('#famRow .fam'))buildColor();
 }
-next.onclick=async()=>{
+next.onclick=()=>{
   const total=screens.length-1;
-  if(i<total){show(i+1);return;}
-  next.disabled=true;next.textContent='Enviando...';
-  try{
-    const r=await fetch('/api/enviar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(coletarDados())});
-    if(r.ok){mostrarSucesso();}
-    else{next.disabled=false;next.textContent='Tentar de novo';alert('Não foi possível enviar agora. Tente de novo em instantes.');}
-  }catch(e){next.disabled=false;next.textContent='Tentar de novo';alert('Falha de conexão. Verifique a internet e tente de novo.');}
+  if(i<total)show(i+1);
+  else alert('Protótipo: aqui o PDF seria gerado e enviado para rodrigomeyer@gmail.com');
 };
-function coletarDados(){
-  const g=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
-  const ax=id=>axisText[id][zoneIdx(+document.getElementById(id).value)][0];
-  return{
-    nome:g('q_nome'),fase:g('q_fase'),diferencial:g('q_super'),pessoa:g('q_pessoa'),
-    cliente:g('q_cliente'),concorrentes:g('q_concorrentes'),
-    personalidade:[ax('ax1'),ax('ax2'),ax('ax3')],
-    personalidadeLinha:(document.getElementById('prLine')||{}).textContent||'',
-    tipografia:data.tipo,simboloMental:g('q_simb'),simboloEstilo:data.simbolo,
-    corAtributo:data.attr,corFamilia:data.fam,corPrimaria:data.cor,corSecundaria:data.sec,
-    pontos:g('q_pontos'),objetivo:g('q_objetivo')
-  };
-}
-function mostrarSucesso(){
-  document.getElementById('stage').innerHTML='<section class="screen active"><div class="eyebrow">Recebido</div><h1>Recebemos o seu briefing.</h1><p class="open-quote">Obrigado pela atenção e pelo cuidado nas respostas. A Badoc&#174; já está com tudo em mãos e entra em contato em breve para os próximos passos.</p></section>';
-  document.querySelector('.footer').style.display='none';
-  document.querySelector('.topbar').style.display='none';
-}
 back.onclick=()=>{if(i>0)show(i-1);};
 function render(){}
 
