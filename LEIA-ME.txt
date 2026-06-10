@@ -1,0 +1,14 @@
+BRIEFING INTERATIVO BADOC - PACOTE PARA VERCEL
+================================================
+
+Arquivos:
+  index.html        -> o formulario interativo (wizard)
+  api/enviar.js      -> o motor que monta e envia o email
+
+Variaveis de ambiente para configurar na Vercel:
+  RESEND_API_KEY     -> a chave de API copiada do Resend
+  EMAIL_DESTINO      -> o email que vai RECEBER os briefings
+  EMAIL_FROM         -> (opcional) remetente. Sem isso, usa o de teste do Resend.
+
+Nao precisa instalar nada nem rodar comandos. Basta subir estes
+arquivos e configurar as variaveis acima na Vercel.
