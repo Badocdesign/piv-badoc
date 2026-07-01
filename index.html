@@ -74,10 +74,8 @@
     -webkit-overflow-scrolling:touch;
     padding:8px 22px 12px;
   }
-  .stage-capa{padding-top:15dvh;}
   .screen{display:none;animation:fade .45s ease;}
   .screen.active{display:block;}
-
   @keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
   .eyebrow{font-size:11px;letter-spacing:.22em;font-weight:600;text-transform:uppercase;opacity:.8;margin-bottom:14px;}
   h1{font-weight:700;font-size:30px;line-height:1.08;letter-spacing:-.01em;margin-bottom:14px;}
@@ -150,8 +148,8 @@
   .icon line,.icon path,.icon rect,.icon circle,.icon polygon{stroke:var(--branco);stroke-width:2.2;fill:none;}
   .card.sel .icon line,.card.sel .icon path,.card.sel .icon rect,.card.sel .icon circle,.card.sel .icon polygon{stroke:var(--preto);}
   /* COR */
-  .fam-row{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
-  .fam{padding:12px 16px;border:1px solid var(--linha);border-radius:14px;font-size:14px;font-weight:500;cursor:pointer;text-align:left;}
+  .fam-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;}
+  .fam{flex:0 0 auto;padding:9px 15px;border:1px solid var(--linha);border-radius:30px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;}
   .fam.sel{background:var(--branco);color:var(--preto);border-color:var(--branco);}
   .fam-desc{font-size:13px;font-weight:300;line-height:1.4;opacity:.9;margin-bottom:16px;min-height:36px;}
   .swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:22px;}
@@ -190,7 +188,6 @@
   .logo{height:26px;display:block;margin:0 auto 30px;}
   /* MARCA REAL BADOC */
   .brand{display:flex;flex-direction:column;align-items:flex-start;margin-bottom:30px;}
-  section.screen.active[data-nav="false"]{justify-content:center;}
   .brand-logo{width:150px;height:auto;}
   .brand-logo path{fill:#fff;}
   .chevron-bar{
@@ -213,11 +210,6 @@
   .mode-card:active{transform:scale(.99);}
   .mode-t{font-size:17px;font-weight:600;}
   .mode-d{font-size:13px;font-weight:300;opacity:.85;}
-  .whats-note{background:#25D366;border-radius:16px;padding:20px 20px 18px;margin-top:36px;}
-  .whats-label{font-size:18px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:10px;}
-  .whats-note p{font-size:14.5px;font-weight:400;color:#fff;margin-bottom:16px;line-height:1.55;}
-  .whats-note p strong{font-weight:700;}
-  .whats-btn{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#25D366;background:#fff;border-radius:30px;padding:11px 20px;text-decoration:none;width:fit-content;}
 </style>
 </head>
 <body>
@@ -231,7 +223,7 @@
   <div class="stage" id="stage">
 
     <!-- 0 CAPA -->
-    <section class="screen screen-capa active" data-nav="false">
+    <section class="screen active" data-nav="false">
       <div class="brand">
         <svg class="brand-logo" viewBox="0 0 526.9 135.91" role="img" aria-label="Badoc">
           <path d="M362.84,135.63c-27.7-.18-50.09-22.88-49.89-50.58.19-27.71,22.89-50.09,50.58-49.9,27.7.19,50.09,22.87,49.9,50.58-.2,27.7-22.89,50.09-50.59,49.9ZM363.33,64.78c-11.36-.08-20.67,9.1-20.76,20.47-.07,11.37,9.11,20.67,20.48,20.75,11.36.08,20.67-9.11,20.75-20.47.08-11.37-9.11-20.68-20.47-20.75Z"/>
@@ -396,35 +388,18 @@
     <section class="screen" data-block="Universo Visual" data-init="cor">
       <div class="eyebrow">Cor</div>
       <h2>Que cor traduz sua marca?</h2>
-      <p class="sub">Como você prefere começar?</p>
+      <p class="sub">Toque no que a sua marca quer transmitir. As cores abaixo se ajustam à sensação escolhida.</p>
 
-      <div class="mode-row" id="modeRow">
-        <button type="button" class="mode-card" onclick="setMode('direto')"><span class="mode-t">Já tenho uma direção</span><span class="mode-d">Sei mais ou menos a cor que quero</span></button>
-        <button type="button" class="mode-card" onclick="setMode('atributo')"><span class="mode-t">Me ajuda a descobrir</span><span class="mode-d">Digo o que a marca quer transmitir e vejo as cores</span></button>
+      <div class="fam-row" id="attrRow"></div>
+      <div class="fam-desc" id="attrDesc">Toque em uma sensação para ver as cores.</div>
+      <div class="swatches" id="swatchesAttr"></div>
+
+      <button type="button" class="linkbtn" id="refBtn" onclick="toggleRef()">Já sabe a cor exata, ou tem uma referência? &#8594;</button>
+      <div id="refWrap" style="display:none;">
+        <textarea id="q_corRef" placeholder="Cole um link, um hex, ou descreva (ex: verde da Amazônia, azul petróleo escuro)..."></textarea>
       </div>
-
-      <div id="modoDireto" style="display:none;">
-        <div class="fam-row" id="famRow"></div>
-        <div class="fam-desc" id="famDesc">Toque em uma família para começar.</div>
-        <div class="swatches" id="swatches"></div>
-      </div>
-
-      <div id="modoAtributo" style="display:none;">
-        <div class="fam-row" id="attrRow"></div>
-        <div class="fam-desc" id="attrDesc">Toque no que a sua marca quer transmitir.</div>
-        <div class="swatches" id="swatchesAttr"></div>
-      </div>
-
-      <button type="button" class="linkbtn" id="modeBack" style="display:none;" onclick="resetMode()">&#8592; Trocar de caminho</button>
 
       <div id="simWrap" style="display:none;">
-        <div class="sim-title">Como sua cor primária se comporta</div>
-        <div class="sim">
-          <div class="sim-box"><div class="sim-chip" id="rgbChip"></div><div class="sim-cap"><b>NA TELA</b>RGB &middot; digital</div></div>
-          <div class="sim-box"><div class="sim-chip" id="cmykChip"></div><div class="sim-cap"><b>IMPRESSO</b>CMYK &middot; físico</div></div>
-        </div>
-        <p class="micro" id="gamutNote"></p>
-
         <div class="sec-title">Agora a cor secundária</div>
         <p class="micro" style="margin-top:0;margin-bottom:10px;">Toque numa das sugestões harmônicas da Badoc&#174;, ou escolha a sua.</p>
         <div class="sec-row" id="secSuggest"></div>
@@ -460,15 +435,10 @@
 
     <!-- 19 DIAGNOSTICO -->
     <section class="screen" data-nav="false" data-block="Síntese">
-      <div class="eyebrow">Quase lá</div>
-      <h1>Seu diagnóstico está pronto.</h1>
-      <p class="sub">A Badoc&#174; já tem tudo o que precisa para começar. Clique em enviar e entraremos em contato em breve.</p>
-      <div id="diagBody" style="display:none"></div>
-      <div class="whats-note">
-        <div class="whats-label">Importante</div>
-        <p>Se você tiver referências visuais, logos de marcas que admira, moodboard ou qualquer imagem que inspire a sua marca, envie pelo WhatsApp logo após o envio. Isso enriquece muito o diagnóstico.</p>
-        <a href="https://wa.me/5582988293228" target="_blank" class="whats-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Enviar referências pelo WhatsApp</a>
-      </div>
+      <div class="eyebrow">Seu Diagnóstico</div>
+      <h1 id="diagHead">A marca que apareceu aqui.</h1>
+      <p class="sub">Essa é a leitura visual que extraímos das suas escolhas. É daqui que a Badoc&#174; parte para criar.</p>
+      <div id="diagBody"></div>
     </section>
 
   </div>
@@ -480,7 +450,7 @@
 
 <script>
 /* ---------- ESTADO ---------- */
-const data={tipo:"",simbolo:"",cor:null,fam:"",sec:null,secFam:"",attr:""};
+const data={tipo:"",simbolo:"",cor:null,sec:null,secFam:"",attr:""};
 let i=0;
 const screens=[...document.querySelectorAll('.screen')];
 const stage=document.getElementById('stage');
@@ -508,33 +478,18 @@ const families={
 };
 
 function buildColor(){
-  const row=document.getElementById('famRow');row.innerHTML='';
-  Object.keys(families).forEach(name=>{
-    const b=document.createElement('div');b.className='fam';b.textContent=name;
-    b.onclick=()=>selectFam(name,b);row.appendChild(b);
-  });
   const arow=document.getElementById('attrRow');arow.innerHTML='';
   Object.keys(attributes).forEach(name=>{
     const b=document.createElement('div');b.className='fam';b.textContent=name;
     b.onclick=()=>selectAttr(name,b);arow.appendChild(b);
   });
 }
-function setMode(m){
-  document.getElementById('modeRow').style.display='none';
-  document.getElementById('modeBack').style.display='block';
-  document.getElementById('modoDireto').style.display=(m==='direto')?'block':'none';
-  document.getElementById('modoAtributo').style.display=(m==='atributo')?'block':'none';
-}
-function resetMode(){
-  document.getElementById('modeRow').style.display='flex';
-  document.getElementById('modeBack').style.display='none';
-  document.getElementById('modoDireto').style.display='none';
-  document.getElementById('modoAtributo').style.display='none';
-  document.getElementById('simWrap').style.display='none';
-  data.cor=null;data.sec=null;data.fam="";data.attr="";
+function toggleRef(){
+  const w=document.getElementById('refWrap');
+  w.style.display=(w.style.display!=='none')?'none':'block';
 }
 function selectAttr(name,el){
-  data.attr=name;data.fam="";data.cor=null;
+  data.attr=name;data.cor=null;
   document.querySelectorAll('#attrRow .fam').forEach(f=>f.classList.remove('sel'));
   el.classList.add('sel');
   document.getElementById('attrDesc').textContent=attributes[name].desc;
@@ -546,32 +501,10 @@ function selectAttr(name,el){
   document.getElementById('simWrap').style.display='none';
   render();
 }
-function selectFam(name,el){
-  data.fam=name;data.attr="";data.cor=null;
-  document.querySelectorAll('#famRow .fam').forEach(f=>f.classList.remove('sel'));
-  el.classList.add('sel');
-  document.getElementById('famDesc').textContent=families[name].desc;
-  const sw=document.getElementById('swatches');sw.innerHTML='';
-  families[name].tones.forEach(hex=>{
-    const s=document.createElement('div');
-    s.className='sw';s.style.background=hex;
-    s.onclick=()=>selectTone(hex,s);
-    sw.appendChild(s);
-  });
-  document.getElementById('simWrap').style.display='none';
-  render();
-}
 function selectTone(hex,el){
   data.cor=hex;data.sec=null;data.secFam="";
-  document.querySelectorAll('#swatches .sw,#swatchesAttr .sw').forEach(s=>s.classList.remove('sel'));
+  document.querySelectorAll('#swatchesAttr .sw').forEach(s=>s.classList.remove('sel'));
   el.classList.add('sel');
-  const cmyk=simulateCMYK(hex);
-  document.getElementById('rgbChip').style.background=hex;
-  document.getElementById('cmykChip').style.background=cmyk;
-  const shift=colorDistance(hex,cmyk);
-  const note=document.getElementById('gamutNote');
-  if(shift>22){note.textContent="Atenção: essa cor é bem vibrante na tela e tende a perder brilho quando impressa. Vale considerar no projeto.";}
-  else{note.textContent="Boa notícia: essa cor se mantém fiel tanto na tela quanto no impresso.";}
   const sug=document.getElementById('secSuggest');sug.innerHTML='';
   harmonics(hex).forEach(h=>{
     const c=document.createElement('div');
@@ -682,7 +615,6 @@ function show(n){
   i=n;
   screens[i].classList.add('active');
   stage.scrollTop=0;
-  stage.classList.toggle('stage-capa',n===0);
   const total=screens.length-1;
   prog.style.width=(i/total*100)+'%';
   count.textContent=(i===0||i===total)?'':i+' / '+(total-1);
@@ -691,7 +623,7 @@ function show(n){
   else if(i===total-1)next.textContent='Ver meu diagnóstico';
   else if(i===total){next.textContent='Enviar para a Badoc\u00ae';buildDiag();}
   else next.textContent='Continuar';
-  if(screens[i].dataset.init==='cor'&&!document.querySelector('#famRow .fam'))buildColor();
+  if(screens[i].dataset.init==='cor'&&!document.querySelector('#attrRow .fam'))buildColor();
 }
 next.onclick=async()=>{
   const total=screens.length-1;
@@ -712,12 +644,12 @@ function coletarDados(){
     personalidade:[ax('ax1'),ax('ax2'),ax('ax3')],
     personalidadeLinha:(document.getElementById('prLine')||{}).textContent||'',
     tipografia:data.tipo,simboloMental:g('q_simb'),simboloEstilo:data.simbolo,
-    corAtributo:data.attr,corFamilia:data.fam,corPrimaria:data.cor,corSecundaria:data.sec,
+    corAtributo:data.attr,corPrimaria:data.cor,corSecundaria:data.sec,corReferencia:g('q_corRef'),
     pontos:g('q_pontos'),objetivo:g('q_objetivo')
   };
 }
 function mostrarSucesso(){
-  document.getElementById('stage').innerHTML='<section class="screen active screen-capa"><div class="eyebrow">Recebido</div><h1>Recebemos o seu briefing.</h1><p class="open-quote">Obrigado pela atenção e pelo cuidado nas respostas. A Badoc&#174; já está com tudo em mãos e entra em contato em breve para os próximos passos.</p></section>';
+  document.getElementById('stage').innerHTML='<section class="screen active"><div class="eyebrow">Recebido</div><h1>Recebemos o seu briefing.</h1><p class="open-quote">Obrigado pela atenção e pelo cuidado nas respostas. A Badoc&#174; já está com tudo em mãos e entra em contato em breve para os próximos passos.</p></section>';
   document.querySelector('.footer').style.display='none';
   document.querySelector('.topbar').style.display='none';
 }
@@ -727,7 +659,7 @@ function render(){}
 /* ---------- DIAGNOSTICO ---------- */
 function buildDiag(){
   const nome=document.getElementById('q_nome').value||'Sua marca';
-  // titulo fixo na tela final
+  document.getElementById('diagHead').textContent=nome+', em poucas escolhas.';
   const ax1=+document.getElementById('ax1').value;
   const ax2=+document.getElementById('ax2').value;
   const ax3=+document.getElementById('ax3').value;
@@ -740,11 +672,12 @@ function buildDiag(){
   if(simb)html+=card('Imagem mental',simb);
   if(data.cor){
     const sec=data.sec||harmonics(data.cor)[0];
-    const lbl=data.attr||data.fam||'Cor';
-    const dsc=data.attr?attributes[data.attr].desc.split('.')[0]:(data.fam?families[data.fam].desc.split('.')[0]:'Direção definida');
+    const lbl=data.attr||'Cor';
+    const dsc=data.attr?attributes[data.attr].desc.split('.')[0]:'Direção definida';
     html+=`<div class="diag-card"><div class="lbl">Caminho de cor &middot; ${lbl}</div><div class="val">${dsc}</div><div class="diag-palette"><span style="background:${data.cor}"></span><span style="background:${sec}"></span></div></div>`;
   }else{
-    html+=card('Caminho de cor','A explorar na imersão');
+    const ref=(document.getElementById('q_corRef')||{}).value;
+    html+=card('Caminho de cor',ref?('Referência do cliente: '+ref):'A explorar na imersão');
   }
   document.getElementById('diagBody').innerHTML=html;
 }
