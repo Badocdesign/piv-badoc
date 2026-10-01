@@ -139,7 +139,20 @@ button.link{border:0;background:0;padding:0;min-height:0;color:var(--green);font
 }
 .bar .meta{font-size:11px;color:var(--mid);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;line-height:1.5}
 .bar .meta #barTotal.zero{color:#C0392B}
+.bar > .inner{flex:1;min-width:0}
+.bar .botoes{display:flex;gap:10px;margin-top:8px}
+.bar .botoes .solid{flex:1;width:auto}
+.bar .botoes .ghost{flex:none;min-height:44px;padding:9px 18px;font-weight:700;font-size:15px;color:var(--ink);border-color:var(--ink)}
 .bar button.solid{flex:1}
+.previa{position:fixed;inset:0;z-index:80;background:#e6e6e6;display:none;flex-direction:column}
+.previa.on{display:flex}
+.previa .topo{display:flex;gap:12px;align-items:center;padding:10px var(--pad);background:#fff;border-bottom:1px solid var(--hair)}
+.previa .topo span{flex:1;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mid)}
+.previa .topo button{min-height:40px;padding:8px 16px}
+.previa .paginas{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:16px 12px 40px}
+.previa canvas,.previa iframe{display:block;width:100%;max-width:820px;margin:0 auto 14px;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.18)}
+.previa iframe{height:calc(100vh - 120px);border:0}
+.previa .aviso{max-width:820px;margin:40px auto;text-align:center;color:var(--mid);font-size:14px}
 .toast{
   position:fixed;left:50%;transform:translateX(-50%);bottom:96px;z-index:60;
   background:var(--ink);color:#fff;font-size:14px;padding:11px 18px;border-radius:2px;
@@ -179,6 +192,7 @@ details.adv > div{padding-top:18px}
   body{font-size:15px}
   main,header.top,.bar{max-width:720px;margin-left:auto;margin-right:auto}
   .bar{left:0;right:0}
+  .bar .botoes{flex:1;margin-top:0}
   .bar > div.inner{max-width:720px;margin:0 auto;display:flex;gap:12px;width:100%;align-items:center}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -188,7 +202,7 @@ details.adv > div{padding-top:18px}
 
 <header class="top">
   <h1>Propostas <em>Badoc®</em></h1>
-  <div class="st"><span id="build">v20</span> · <span id="fontState">fontes padrão</span></div>
+  <div class="st"><span id="build">v24</span> · <span id="fontState">fontes padrão</span></div>
 </header>
 
 <noscript>
@@ -327,9 +341,13 @@ Pajuçara. Maceió-AL
 
 <div class="bar"><div class="inner">
   <div class="meta"><span id="fileName">proposta.pdf</span><br><span id="barTotal" style="color:var(--ink);font-weight:700">R$ 0</span></div>
-  <button class="solid" id="gerar">Gerar PDF</button>
+  <div class="botoes"><button class="ghost" id="previa" type="button">Prévia</button><button class="solid" id="gerar">Gerar PDF</button></div>
 </div></div>
 
+<div class="previa" id="previaBox" role="dialog" aria-label="Prévia da proposta">
+  <div class="topo"><span id="previaInfo">Prévia</span><button type="button" id="previaFechar">Fechar</button><button type="button" class="solid" id="previaGerar" style="width:auto">Gerar PDF</button></div>
+  <div class="paginas" id="previaPaginas"></div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>/* pdf-lib */
@@ -559,7 +577,7 @@ Telão | Projeções e template para vídeo.`}},
 ];
 
 /* ---------- estado ---------- */
-const BUILD='v21';
+const BUILD='v24';
 const K='badoc.proposta.v2';
 const K_ANTIGO='badoc.proposta.v1';
 const KF='badoc.assets.v1';
@@ -585,7 +603,7 @@ function saveAssets(){
   catch(e){ toast('Arquivo grande demais pra salvar no aparelho'); }
 }
 function newBloco(seed){
-  return Object.assign({item:'',titulo:'',numerar:true,precoNoTexto:false,eyebrow:'',modo:'bullets',colunas:1,pecasModo:'definidas',pecas:[],pecasExtra:'',conteudo:'',total:'',totalLabel:''}, seed||{});
+  return Object.assign({item:'',titulo:'',numerar:true,precoNoTexto:false,eyebrow:'',abertura:'',modo:'bullets',colunas:1,pecasModo:'definidas',pecas:[],pecasExtra:'',conteudo:'',total:'',totalLabel:''}, seed||{});
 }
 
 /* ---------- ligação de campos ---------- */
@@ -655,7 +673,10 @@ function blocoNode(b,i){
       <label class="f"><span>Preço</span>
         <input type="text" data-k="total" inputmode="decimal" placeholder="opcional"></label>
     </div>
-    <label class="f"><span>Detalhamento <button type="button" class="link" data-reset style="float:right;font-size:11px;letter-spacing:.06em">recarregar padrão</button><button type="button" class="link" data-split style="float:right;font-size:11px;letter-spacing:.06em;margin-right:14px">vírgulas em tópicos</button></span>
+    <label class="f"><span>Texto de abertura</span>
+      <textarea data-k="abertura" style="min-height:96px" placeholder="Parágrafo antes dos itens. Pode ser longo."></textarea>
+    </label>
+    <label class="f"><span>Itens <button type="button" class="link" data-reset style="float:right;font-size:11px;letter-spacing:.06em">recarregar padrão</button><button type="button" class="link" data-split style="float:right;font-size:11px;letter-spacing:.06em;margin-right:14px">vírgulas em tópicos</button></span>
       <textarea data-k="conteudo" style="min-height:150px"></textarea>
       <span class="hint" data-hint></span>
     </label>
@@ -695,9 +716,10 @@ function blocoNode(b,i){
     el.addEventListener('input',()=>{ b[el.dataset.k]=el.value; save(); if(el.dataset.k==='total'||el.dataset.k==='titulo'||el.dataset.k==='totalLabel') syncInvestimentos(false); });
   });
   if(b.item==='livre'){
-    wrap.querySelector('input[data-k="titulo"]').placeholder='Título curto, ex.: Criação de projeto de fardamento';
+    wrap.querySelector('input[data-k="titulo"]').placeholder='Título curto, ex.: Projeto de fardamento';
+    wrap.querySelector('textarea[data-k="abertura"]').placeholder='Texto de abertura. Pode ser longo, quebra sozinho.';
     const ta=wrap.querySelector('textarea[data-k="conteudo"]');
-    ta.placeholder='Escreva ou cole aqui. Um tópico por linha. Se colou um texto separado por vírgulas, use "vírgulas em tópicos" acima.';
+    ta.placeholder='Um item por linha. Se colou uma lista separada por vírgulas, use "vírgulas em tópicos" acima.';
     ta.style.minHeight='260px';
   }
   const totalEl=wrap.querySelector('[data-k="total"]');
@@ -730,7 +752,7 @@ function blocoNode(b,i){
     b.modo=modelo.modo||'bullets';
     b.colunas=modelo.colunas||1;
     b.numerar=modelo.numerar!==false;
-    b.eyebrow=modelo.eyebrow||'';
+    b.eyebrow=modelo.eyebrow||''; b.abertura=modelo.abertura||'';
     b.totalLabel=modelo.totalLabel||'';
     b.total = cat.preco ? moneyOut(cat.preco) : '';
     b.pecas=[]; b.pecasExtra=''; b.pecasModo='definidas';
@@ -803,7 +825,7 @@ function blocoNode(b,i){
     const m=cat.b;
     b.titulo=m.titulo||''; b.conteudo=m.conteudo||''; b.padrao=m.conteudo||'';
     b.modo=m.modo||'bullets'; b.colunas=m.colunas||1; b.numerar=m.numerar!==false;
-b.eyebrow=m.eyebrow||''; b.totalLabel=m.totalLabel||'';
+b.eyebrow=m.eyebrow||''; b.abertura=m.abertura||''; b.totalLabel=m.totalLabel||'';
     b.total = cat.preco ? moneyOut(cat.preco) : '';
     b.pecas=[]; b.pecasExtra=''; b.pecasModo='definidas';
     save(); renderBlocos(); syncInvestimentos(true); toast('Padrão recarregado');
@@ -1322,7 +1344,9 @@ async function buildPDF(){
   }
 
   function desenhaConteudo(b){
-    fluirItens(itensDoBloco(b), b.modo==='bullets'?7:9, Number(b.colunas)===2);
+    const itensB=itensDoBloco(b);
+    const esp=b.modo==='bullets'?((b.item==='livre' && itensB.length>12)?4:7):9;
+    fluirItens(itensB, esp, Number(b.colunas)===2);
   }
 
   function desenhaPecas(b){
@@ -1435,7 +1459,7 @@ async function buildPDF(){
 
   let n=0, primeiro=true;
   state.blocos.forEach(b=>{
-    if(!(b.titulo||'').trim() && !(b.conteudo||'').trim() && !parseMoney(b.total)) return;
+    if(!(b.titulo||'').trim() && !(b.abertura||'').trim() && !(b.conteudo||'').trim() && !parseMoney(b.total)) return;
     const numerado=b.numerar!==false;
     if(numerado) n++;
     primeiro=primeiro?(gap(18),false):(gap(20),false);
@@ -1448,6 +1472,10 @@ async function buildPDF(){
       if((b.eyebrow||'').trim()){
         para(b.eyebrow.toUpperCase(),CX,S.eyebrow,CW);
         gap(6);
+      }
+      if((b.abertura||'').trim()){
+        para(b.abertura.trim(),CX,S.body,CW);
+        gap(8);
       }
       if((b.conteudo||'').trim()) desenhaConteudo(b);
       desenhaPecas(b);
@@ -1473,9 +1501,10 @@ async function buildPDF(){
   const MINIMO=H_ASSINATURA+24;     // topo mínimo, sem invadir o rodapé
   const alturaTotal=hClose+RESPIRO+H_ASSINATURA;
 
-  if(y-16-alturaTotal < 24) addPage(false);
+  const FOLGA=16;                   // do último item até a linha dos Investimentos
+  if(y-16-FOLGA-alturaTotal < 24) addPage(false);
 
-  let topoGrupo=Math.min(y-16, PADRAO+RESPIRO+hClose);
+  let topoGrupo=Math.min(y-16-FOLGA, PADRAO+RESPIRO+hClose);
   if(topoGrupo-hClose-RESPIRO < MINIMO) topoGrupo=MINIMO+RESPIRO+hClose;
 
   page.drawLine({start:{x:ML,y:topoGrupo+16},end:{x:RIGHT,y:topoGrupo+16},thickness:1.1,color:INK});
@@ -1485,6 +1514,76 @@ async function buildPDF(){
 
   return await pdf.save();
 }
+
+/* ---------- prévia ---------- */
+const PDFJS_VER='3.11.174';
+const PDFJS_BASE='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/'+PDFJS_VER+'/';
+let pdfjsPromessa=null, previaUrl=null;
+function carregarPdfJs(){
+  if(window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if(pdfjsPromessa) return pdfjsPromessa;
+  pdfjsPromessa=new Promise((ok,erro)=>{
+    const sc=document.createElement('script');
+    sc.src=PDFJS_BASE+'pdf.min.js';
+    sc.onload=()=>{
+      try{ window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS_BASE+'pdf.worker.min.js'; ok(window.pdfjsLib); }
+      catch(e){ erro(e); }
+    };
+    sc.onerror=()=>{ pdfjsPromessa=null; erro(new Error('pdf.js não carregou')); };
+    document.head.appendChild(sc);
+  });
+  return pdfjsPromessa;
+}
+function fecharPrevia(){
+  document.getElementById('previaBox').classList.remove('on');
+  document.getElementById('previaPaginas').innerHTML='';
+  if(previaUrl){ URL.revokeObjectURL(previaUrl); previaUrl=null; }
+}
+async function abrirPrevia(){
+  const btn=document.getElementById('previa');
+  const box=document.getElementById('previaBox');
+  const area=document.getElementById('previaPaginas');
+  const info=document.getElementById('previaInfo');
+  btn.disabled=true;
+  try{
+    const bytes=await buildPDF();
+    area.innerHTML='';
+    box.classList.add('on');
+    info.textContent='Prévia';
+    try{
+      const lib=await carregarPdfJs();
+      const doc=await lib.getDocument({data:bytes.slice()}).promise;
+      const larg=Math.min(area.clientWidth-24,820)*Math.min(window.devicePixelRatio||1,2.5);
+      for(let n=1;n<=doc.numPages;n++){
+        const pg=await doc.getPage(n);
+        const vp0=pg.getViewport({scale:1});
+        const vp=pg.getViewport({scale:larg/vp0.width});
+        const cv=document.createElement('canvas');
+        cv.width=Math.floor(vp.width); cv.height=Math.floor(vp.height);
+        area.appendChild(cv);
+        await pg.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
+      }
+      info.textContent='Prévia · '+doc.numPages+(doc.numPages===1?' página':' páginas');
+    }catch(e){
+      // sem internet ou pdf.js bloqueado: mostra o PDF pelo visualizador do navegador
+      console.warn(e);
+      previaUrl=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+      area.innerHTML='';
+      const fr=document.createElement('iframe');
+      fr.src=previaUrl; fr.title='Prévia';
+      area.appendChild(fr);
+      info.textContent='Prévia (modo simples)';
+    }
+  }catch(e){
+    console.error(e);
+    toast('Não deu pra gerar a prévia: '+(e.message||e));
+  }finally{
+    btn.disabled=false;
+  }
+}
+document.getElementById('previa').addEventListener('click',abrirPrevia);
+document.getElementById('previaFechar').addEventListener('click',fecharPrevia);
+document.getElementById('previaGerar').addEventListener('click',()=>{ fecharPrevia(); document.getElementById('gerar').click(); });
 
 /* ---------- gerar ---------- */
 document.getElementById('gerar').addEventListener('click',async()=>{
